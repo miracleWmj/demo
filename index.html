@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>demo</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/photo-sphere-viewer.min.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/plugins/markers.css">
+</head>
+<style>
+  *{
+    padding: 0;
+    margin: 0;
+  }
+   #viewer {
+    width: 100vw;
+    height: 100vh;
+  }
+  .right-box{
+    width: 150px;
+    height: 200px;
+    position: fixed;
+    right: 0;
+    top: 100px;
+    z-index: 100;
+  }
+  .right-box button{
+    width: 100px;
+    height: 60px;
+  }
+.psv-markers-config {
+    cursor: pointer;
+    position: relative;
+  }
+  .psv-markers-config  .span-title {
+    display: block;
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 120px;
+    padding: 6px 12px;
+    color: #fff;
+    font-size: 12px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 2px;
+  }
+  .psv-markers-config  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+  }
+</style>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.8/vue.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/three/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/uevent@2/browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/photo-sphere-viewer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/plugins/markers.js"></script>
+
+<body>
+  <div id="app">
+      <div id="viewer"></div>
+      <div class="right-box">
+        <button @click="clickAdd">ADD Markers</button>
+      </div>
+  </div>
+</body>
+</html>
+
+<script>
+  const el = new Vue({
+    el:"#app",
+    data:{
+        viewer:null,
+        arrList: [
+          {
+              "alias": "",
+              "audioUrl": "",
+              "hotSpotId": 6,
+              "hotSpotName": "主卧",
+              "icon": "http://oss.rtaotao.com/preview/89d8566c5a9b473cb884dbc035ab0ca5.png",
+              "id": 52914047434752,
+              "linkUrl": "",
+              "picUrl": "",
+              "position": "4.587140956907329,0.014730224760147737",
+              "sceneGroupSubId": 52535581753344,
+              "spotType": "scene",
+              "tableId": 52277676097536,
+              "tableName": "",
+              "threeUrl": "",
+              "txtIntro": "",
+              "videoOnlineUrl": "",
+              "videoType": ""
+          },
+          {
+              "alias": "",
+              "audioUrl": "",
+              "hotSpotId": 5,
+              "hotSpotName": "海岛",
+              "icon": "http://oss.rtaotao.com/preview/83bf86770ce245c48ef194c998ffe106.png",
+              "id": 52911861153792,
+              "linkUrl": "",
+              "picUrl": "",
+              "position": "4.519846611060259,-0.3599617087816611",
+              "sceneGroupSubId": 52535581753344,
+              "spotType": "scene",
+              "tableId": 52535581753345,
+              "tableName": "",
+              "threeUrl": "",
+              "txtIntro": "",
+              "videoOnlineUrl": "",
+              "videoType": ""
+          },
+          {
+              "alias": "",
+              "audioUrl": "",
+              "hotSpotId": 9,
+              "hotSpotName": "淘宝",
+              "icon": "http://oss.rtaotao.com/preview/a2af91f1cdcf4f08a5959915a78d8bd7.png",
+              "id": 53058000142336,
+              "linkUrl": "https://www.tabao.com",
+              "picUrl": "",
+              "position": "5.429513733131653,0.09713189365792663",
+              "sceneGroupSubId": 52535581753344,
+              "spotType": "link",
+              "tableId": "",
+              "tableName": "",
+              "threeUrl": "",
+              "txtIntro": "",
+              "videoOnlineUrl": "",
+              "videoType": ""
+          }
+      ],
+      num:0
+    },
+    mounted() {
+      this.viewer = new PhotoSphereViewer.Viewer({
+        container: 'viewer',
+        panorama: 'http://oss.rtaotao.com/picture/65c76f1670e348a38cfa27f2c6803cd2.jpg',
+        defaultZoomLvl: 0,
+        autorotateDelay: 1000,
+        autorotateSpeed: '1rpm',
+        navbar: null,  
+        plugins: [[PhotoSphereViewer.MarkersPlugin]]
+      })
+    },
+    methods:{
+        clickAdd(){
+          if(this.num<this.arrList.length){
+            this.addMarkers(this.arrList[this.num])
+            this.num ++
+            console.log(this.num);
+          }
+        },
+        addMarkers(item) {
+          // console.log(this.viewer.plugins.markers);
+          const markers = this.viewer.getPlugin(PhotoSphereViewer.MarkersPlugin)
+            const position = item.position.split(',')
+            let temp = ''
+            if (item.hotSpotName) {
+              temp = `<span title=${item.hotSpotName} class="span-title">${item.hotSpotName}</span>`
+            }
+            const info = {
+              id: item.id,
+              width: 55,
+              height: 55,
+              className: 'psv-markers-config',
+              longitude: position[0],
+              latitude: position[1],
+              html: `
+              <div>
+                ${temp}
+                <img src=${item.icon} alt="" />
+              </div>
+              `,
+              origin: item
+            }
+            if (item.spotType === 'txt') {
+              info.content = item.txtIntro
+            }
+            markers.addMarker(info)
+        },
+    }
+})
+      
+</script>
